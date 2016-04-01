@@ -6,6 +6,7 @@ namespace AssemblyCSharp
 	{
 		public Carta ()
 		{
+			
 		}
 	}
 }
