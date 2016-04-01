@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
@@ -11,6 +12,14 @@ public class GameManager : MonoBehaviour {
 	public int tijeraMareo;
 	public int papelMareo;
 
+	public Text textoPiedra;
+	public Text textoTijera;
+	public Text textoPapel;
+
+	public Text textoPiedraMareo;
+	public Text textoTijeraMareo;
+	public Text textoPapelMareo;
+
 	private bool botonActivo;
 
 	// Use this for initialization
@@ -20,19 +29,29 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		cambiaTextos ();
 	}
 
 	private void iniciaJuego () {
-		piedra = 2;
-		papel = 2;
-		tijera = 2;
+		//this.piedra = piedra;
+		
+		//tijera = 2;
 
-		piedraMareo = 0;
-		tijeraMareo = 0;
-		papelMareo = 0;
+		//piedraMareo = 0;
+		//tijeraMareo = 0;
+		//papelMareo = 0;
 
 		botonActivo = true;
+	}
+
+	private void cambiaTextos () {
+		textoPiedra.text = piedra.ToString();
+		textoTijera.text = tijera.ToString();
+		textoPapel.text = papel.ToString();
+
+		textoPiedraMareo.text = piedraMareo.ToString();
+		textoTijeraMareo.text = tijeraMareo.ToString();
+		textoPapelMareo.text = papelMareo.ToString();
 	}
 
 	public void juegaCarta (int carta) {
