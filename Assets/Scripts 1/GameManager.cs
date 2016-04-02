@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour {
 
 	public List<GameObject> botones;
 	public List<GameObject> prefabs;
+	public GameObject panel;
 
 	public System.Random rand;
 
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 		rand = new System.Random (System.DateTime.Now.Millisecond);
 		cambiaTextos ();
+		repintaCartas ();
 		switch(estadoActual){
 		case(estadosJuego.ESPERA):break; // No hagas nada quillo
 		case(estadosJuego.INICIO):
@@ -118,7 +120,10 @@ public class GameManager : MonoBehaviour {
 	private void roba (int n) {
 		// añade n botones a la lista y a la escena
 		for (int i = 0; i < n; i++) {
-			botones.Add ((GameObject) GameObject.Instantiate(prefabs[rand.Next(0,9)]));
+			GameObject hijo = GameObject.Instantiate (prefabs [rand.Next (0, 9)]) as GameObject;
+			hijo.transform.parent = panel.transform;
+			hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0,0,-90));
+			botones.Add (hijo);
 		}
 		repintaCartas ();
 	}
@@ -127,7 +132,8 @@ public class GameManager : MonoBehaviour {
 		int escalon = -60;
 		int offset = -0;
 		foreach (GameObject boton in botones) {
-			boton.GetComponent<RectTransform> ().position = new Vector3 (escalon + offset, 0, 0);
+			boton.GetComponent<RectTransform> ().localPosition = new Vector3 (escalon + offset, 0, 0);
+			boton.GetComponent<RectTransform> ().localScale = new Vector3 (1, 1, 1);
 			offset -= 110;
 		}
 	}
@@ -178,9 +184,9 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="cartaIA">Carta I.</param>
 	/// <param name="cartaJugador">Carta jugador.</param>
-	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad) {
+	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad, int idCarta) {
 		apagaBotones ();
-		// TODO: Comprobar que podemos crear la carta (por si no tenemos caras de ese tipo)
+		// Buscamos la carta y la borramos
 		cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
 		cartaIA = IAEligeCarta ();

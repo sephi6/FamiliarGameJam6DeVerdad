@@ -18,13 +18,13 @@ public class UIManager : MonoBehaviour {
 
     public void cierraPestaña()
     {
-        if (botonPanel.GetInteger("cierra") == 1)
+        if (botonPanel.GetInteger("salida") == 1)
         {
-            botonPanel.SetInteger("cierra", 0);
+			botonPanel.SetInteger("salida", 0);
         }
         else
         {
-            botonPanel.SetInteger("cierra", 1);
+			botonPanel.SetInteger("salida", 1);
         }
         
     }
