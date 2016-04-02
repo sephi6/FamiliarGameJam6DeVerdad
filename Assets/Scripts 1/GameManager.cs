@@ -19,6 +19,9 @@ public class GameManager : MonoBehaviour {
 	public Dictionary<Card.TIPO, int> recursos = new Dictionary<Card.TIPO, int> ();
 
 	public List<GameObject> botones;
+	public List<GameObject> prefabs;
+
+	public System.Random rand;
 
 	public int piedraMareo;
 	public int tijeraMareo;
@@ -35,6 +38,7 @@ public class GameManager : MonoBehaviour {
 	private bool botonActivo;
 	private bool playerContrarestado;
 	private bool IAContrarestada;
+
 	private Card.TIPO congelado;
 
 	// Use this for initialization
@@ -42,7 +46,7 @@ public class GameManager : MonoBehaviour {
         recursos[Card.TIPO.PIEDRA] = piedra;
         recursos[Card.TIPO.PAPEL] = papel;
         recursos[Card.TIPO.TIJERA] = tijera;
-        
+		rand = new System.Random (System.DateTime.Now.Millisecond);
         if (instance == null)
         {
             instance = this;
@@ -57,6 +61,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		rand = new System.Random (System.DateTime.Now.Millisecond);
 		cambiaTextos ();
 		switch(estadoActual){
 		case(estadosJuego.ESPERA):break; // No hagas nada quillo
@@ -112,6 +117,19 @@ public class GameManager : MonoBehaviour {
 
 	private void roba (int n) {
 		// añade n botones a la lista y a la escena
+		for (int i = 0; i < n; i++) {
+			botones.Add ((GameObject) GameObject.Instantiate(prefabs[rand.Next(0,9)]));
+		}
+		repintaCartas ();
+	}
+
+	private void repintaCartas () {
+		int escalon = -60;
+		int offset = -0;
+		foreach (GameObject boton in botones) {
+			boton.GetComponent<RectTransform> ().position = new Vector3 (escalon + offset, 0, 0);
+			offset -= 110;
+		}
 	}
 
 	private void turno () {
@@ -141,6 +159,8 @@ public class GameManager : MonoBehaviour {
 
 	private void iniciaJuego () {
 		congelado = Card.TIPO.NULL;
+		// robas tres cartas
+		estadoActual = estadosJuego.ROBA;
 	}
 
 	private int totalRecursos () {
@@ -174,7 +194,7 @@ public class GameManager : MonoBehaviour {
 		int tipo;
 		Card resultado;
 		do { 
-			tipo = new System.Random ().Next (1, 4);
+			tipo = rand.Next (1, 4);
 		} while (isTipoBloqueado(tipo));
 		switch (tipo) {
 		case 1:
@@ -218,6 +238,7 @@ public class GameManager : MonoBehaviour {
 		// Mostrar cartas jugdas
 		// Esperar hasta que las animciones terminen
 		// Borrar carta de la escena y la lista
+
 		estadoActual = estadosJuego.CONSTRUCCION;
     }
 
