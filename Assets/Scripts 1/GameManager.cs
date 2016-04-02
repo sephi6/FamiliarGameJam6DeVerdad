@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour {
 
 	public Dictionary<Card.TIPO, int> recursos = new Dictionary<Card.TIPO, int> ();
 
+	public List<GameObject> botones;
+
 	public int piedraMareo;
 	public int tijeraMareo;
 	public int papelMareo;
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour {
 	private Card cartaIA;
 	private Card cartaJugador;
 
+	private bool ganaste;
 	private bool botonActivo;
 	private bool playerContrarestado;
 	private bool IAContrarestada;
@@ -61,9 +64,22 @@ public class GameManager : MonoBehaviour {
 			estadoActual = estadosJuego.ESPERA;
 			iniciaJuego ();
 			break; // Nueva partida
-		case(estadosJuego.FIN_DE_TURNO):break; // Calculamos si perdemos
-		case(estadosJuego.FIN):break; // La partida ya terminó
-        case(estadosJuego.ROBA): break;//ROBACARTA
+		case(estadosJuego.FIN_DE_TURNO):
+			estadoActual = estadosJuego.ESPERA;
+			turno ();
+			break; // Calculamos si perdemos
+		case(estadosJuego.FIN):
+			estadoActual = estadosJuego.ESPERA;
+			if (jugarOtraPartida ())
+				estadoActual = estadosJuego.ESPERA;
+			else
+				finDeJuego ();
+			break; // La partida ya terminó
+		case(estadosJuego.ROBA):
+			estadoActual = estadosJuego.ESPERA;
+			roba (cuantasRobo());
+			enciendeBotones ();
+			break;//ROBACARTA
 	    case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
 		case(estadosJuego.DESTRUCCION):
 			estadoActual = estadosJuego.ESPERA;
@@ -76,8 +92,59 @@ public class GameManager : MonoBehaviour {
         }
 	}
 
+	private int cuantasRobo () {
+		int resultado = 1;
+		if (recursos [Card.TIPO.PIEDRA] == 0)
+			resultado++;
+		if (recursos [Card.TIPO.PAPEL] == 0)
+			resultado++;
+		if (recursos [Card.TIPO.TIJERA] == 0)
+			resultado++;
+		if (recursos [Card.TIPO.PIEDRA] > 4)
+			resultado--;
+		if (recursos [Card.TIPO.PAPEL] > 4)
+			resultado--;
+		if (recursos [Card.TIPO.TIJERA] > 4)
+			resultado--;
+
+		return (resultado > -1) ? resultado : 0;
+	}
+
+	private void roba (int n) {
+		// añade n botones a la lista y a la escena
+	}
+
+	private void turno () {
+		int total = totalRecursos ();
+		if (total < 3) {
+			Debug.Log ("GANASTE WEY");
+			ganaste = true;
+			estadoActual = estadosJuego.FIN;
+		} else if (total > 11) {
+			Debug.Log ("PERDISTE LOOSER");
+			ganaste = false;
+			estadoActual = estadosJuego.FIN;
+		} else {
+			estadoActual = estadosJuego.ROBA;
+		}
+	}
+
+	private bool jugarOtraPartida () {
+		bool resultado = false;
+		// TODO: logica de querer repetir o no la partida
+		return resultado;
+	}
+
+	private void finDeJuego () {
+		Application.Quit ();
+	}
+
 	private void iniciaJuego () {
 		congelado = Card.TIPO.NULL;
+	}
+
+	private int totalRecursos () {
+		return recursos [Card.TIPO.PIEDRA] + recursos [Card.TIPO.PAPEL] + recursos [Card.TIPO.TIJERA];
 	}
 
 	private void cambiaTextos () {
@@ -92,6 +159,7 @@ public class GameManager : MonoBehaviour {
 	/// <param name="cartaIA">Carta I.</param>
 	/// <param name="cartaJugador">Carta jugador.</param>
 	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad) {
+		apagaBotones ();
 		// TODO: Comprobar que podemos crear la carta (por si no tenemos caras de ese tipo)
 		cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
@@ -128,12 +196,18 @@ public class GameManager : MonoBehaviour {
 		switch (tipo) {
 		case 1:
 			resultado = (congelado == Card.TIPO.PIEDRA) ? false : true;
+			if (recursos [Card.TIPO.PIEDRA] > 4)
+				resultado = false;
 			break;
 		case 2:
 			resultado = (congelado == Card.TIPO.PAPEL) ? false : true;
+			if (recursos [Card.TIPO.PAPEL] > 4)
+				resultado = false;
 			break;
 		case 3:
 			resultado = (congelado == Card.TIPO.TIJERA) ? false : true;
+			if (recursos [Card.TIPO.TIJERA] > 4)
+				resultado = false;
 			break;
 		}
 		return false;
@@ -143,6 +217,7 @@ public class GameManager : MonoBehaviour {
     {
 		// Mostrar cartas jugdas
 		// Esperar hasta que las animciones terminen
+		// Borrar carta de la escena y la lista
 		estadoActual = estadosJuego.CONSTRUCCION;
     }
 
@@ -194,7 +269,19 @@ public class GameManager : MonoBehaviour {
 			break;
 		}
         estadoActual = estadosJuego.DESTRUCCION;
-    }
+	}
+
+	public void apagaBotones () {
+		foreach (GameObject boton in botones) {
+			boton.GetComponent<Button> ().interactable = false;
+		}
+	}
+
+	public void enciendeBotones () {
+		foreach (GameObject boton in botones) {
+			boton.GetComponent<Button> ().interactable = true;
+		}
+	}
 
 	/// <summary>
 	/// Termin la jugada en función de si has sido contrrestado o no
@@ -207,6 +294,7 @@ public class GameManager : MonoBehaviour {
 			switch (cartaJugador.especialidadCarta) {
 			case Card.ESPECIALIDAD.LENTA:
 				recursos [cartaJugador.tipoCarta] -= 3;
+				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
 				Debug.Log ("PIM, destruyes 3 " + cartaJugador.tipoCarta);
 				break;
 			case Card.ESPECIALIDAD.PRISA:
@@ -216,6 +304,7 @@ public class GameManager : MonoBehaviour {
 				break;
 			case Card.ESPECIALIDAD.NORMAL:
 				recursos [cartaJugador.tipoCarta] -= 1;
+				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
 				Debug.Log ("Destruyes 1 " + cartaJugador.tipoCarta);
 				break;
 			default:
