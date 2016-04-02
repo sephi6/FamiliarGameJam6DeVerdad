@@ -34,9 +34,8 @@ public class Card : MonoBehaviour {
 	
 	}
 
-    public Card(TIPO tipoCarta, ESPECIALIDAD especialidadCarta, Vector2 sumadores)
+    public Card(TIPO tipoCarta, ESPECIALIDAD especialidadCarta)
     {
-        this.sumadores = sumadores;
         this.tipoCarta = tipoCarta;
         this.especialidadCarta = especialidadCarta;
     }

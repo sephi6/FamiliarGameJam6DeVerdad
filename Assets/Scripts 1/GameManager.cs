@@ -83,6 +83,18 @@ public class GameManager : MonoBehaviour {
         textoPapelMareo.text = (recursos[Card.TIPO.PAPEL][0]).ToString();
 	}
 
+	/// <summary>
+	///  selecciona carta jugador, est funcion será llamada al pulsar un boton (una carta)
+	/// </summary>
+	/// <param name="cartaIA">Carta I.</param>
+	/// <param name="cartaJugador">Carta jugador.</param>
+	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad) {
+		// TODO: Comprobar que podemos crear la carta (por si no tenemos caras de ese tipo)
+		Card cartaJugador = new Card (tipo, especialidad);
+		// Desactivamos todos los botones
+		// Card cartaIA = IAEligeCarta ();
+	}
+
     public void juegaCarta(Card cartaIA, Card cartaJugador)
     {
         switch (ganador(cartaIA, cartaJugador))
