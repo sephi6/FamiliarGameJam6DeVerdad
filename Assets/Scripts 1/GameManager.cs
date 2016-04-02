@@ -6,7 +6,6 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
 
     public enum estadosJuego { INICIO,ROBA,JUEGACARTA,DESTRUCCION,CONSTRUCCION,FIN_DE_TURNO,FIN,ESPERA}
-
     public estadosJuego estadoActual;
 
     public static GameManager instance; // SINGLETONe
@@ -192,10 +191,9 @@ public class GameManager : MonoBehaviour {
 	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad, int idCarta) {
 		apagaBotones ();
 		// Buscamos la carta y la borramos
-		Debug.Log ("NIANO");
+
 		cartaJugador = new Card (tipo, especialidad);
 		cartaIA = IAEligeCarta ();
-		Debug.Log ("CHU");
 		congelado = Card.TIPO.NULL;
 		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
 		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );

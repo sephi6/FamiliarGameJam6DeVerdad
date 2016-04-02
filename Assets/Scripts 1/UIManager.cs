@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 
 public class UIManager : MonoBehaviour {
@@ -31,7 +32,10 @@ public class UIManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+	}
+
+	public void fuente (BaseEventData data) {
+		Debug.Log ("Caller: " + data.selectedObject.name);
 	}
 
     public void cartaSeleccionada(int idButton)
