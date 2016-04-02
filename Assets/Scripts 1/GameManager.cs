@@ -124,6 +124,7 @@ public class GameManager : MonoBehaviour {
 				hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0, 0, 90));
 				hijo.SetActive (true);
 				botones.Add (hijo);
+				hijo.GetComponent<pollada> ().pos = botones.Count;
 			}
 		}
 		repintaCartas ();
@@ -132,9 +133,12 @@ public class GameManager : MonoBehaviour {
 	private void repintaCartas () {
 		int escalon = 475;
 		int offset = -0;
+		int contador = 0;
 		foreach (GameObject boton in botones) {
 			boton.GetComponent<RectTransform> ().localPosition = new Vector3 (escalon + offset, 0, 0);
 			boton.GetComponent<RectTransform> ().localScale = new Vector3 (1, 1, 1);
+			boton.GetComponent<pollada> ().pos = contador;
+			contador++;
 			offset -= 110;
 		}
 	}
@@ -200,6 +204,10 @@ public class GameManager : MonoBehaviour {
 		juegaCarta ();
 	}
 
+	public void borraBoton (int pos) {
+		botones.RemoveAt (pos);
+	}
+
 	public Card IAEligeCarta () {
 		int tipo;
 		Card resultado;
@@ -245,7 +253,7 @@ public class GameManager : MonoBehaviour {
 
     public void juegaCarta()
     {
-		// Mostrar cartas jugdas
+		// Mostrar cartas jugdas6y6
 		// Esperar hasta que las animciones terminen
 		// Borrar carta de la escena y la lista
 
@@ -330,7 +338,7 @@ public class GameManager : MonoBehaviour {
 				break;
 			case Card.ESPECIALIDAD.PRISA:
 				congelado = cartaJugador.tipoCarta;
-				// Roba una carta
+				roba (1);
 				Debug.Log ("Congelas " + cartaJugador.tipoCarta);
 				break;
 			case Card.ESPECIALIDAD.NORMAL:
