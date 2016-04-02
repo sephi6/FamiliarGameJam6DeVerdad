@@ -18,6 +18,14 @@ public class UIManager : MonoBehaviour {
 
     public void cierraPestaña()
     {
+        if (botonPanel.GetInteger("cierra") == 1)
+        {
+            botonPanel.SetInteger("cierra", 0);
+        }
+        else
+        {
+            botonPanel.SetInteger("cierra", 1);
+        }
         
     }
 	
