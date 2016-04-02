@@ -1,14 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+
 
 public class UIManager : MonoBehaviour {
 
     public GameManager gameManager;
 
+    public Animator botonPanel;
+
+    
+
 	// Use this for initialization
 	void Start () {
-	
+	    
 	}
+
+    public void cierraPestaña()
+    {
+        
+    }
 	
 	// Update is called once per frame
 	void Update () {
