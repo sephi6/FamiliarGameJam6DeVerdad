@@ -86,5 +86,37 @@ public class CalculaPosicion : MonoBehaviour {
         
     }
 
+    public int consiguePosicionLibreOrdenado()
+    {
+        int res=0;
+        for (int i=0; i < posicionesOcupadas.Length; i++)
+        {
+            if (posicionesOcupadas[i] == false)
+            {
+                return i;
+            }
+            
+        }
+        return res;
+    }
+
+    public int consiguePosicionLibreRandom()
+    {
+        int res = 0;
+        int random; 
+        bool bucle=true;
+        while (bucle)
+        {
+            random = Random.Range(0, posicionesOcupadas.Length);
+            if (!posicionesOcupadas[random])
+            {
+                res=random;
+                break;
+                
+            }
+        }
+        return res;
+    }
+
     
 }
