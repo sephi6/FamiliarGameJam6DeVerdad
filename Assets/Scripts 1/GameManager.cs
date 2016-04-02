@@ -93,6 +93,8 @@ public class GameManager : MonoBehaviour {
 		Card cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
 		Card cartaIA = IAEligeCarta ();
+		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
+		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );
 		juegaCarta (cartaIA, cartaJugador);
 	}
 
@@ -129,14 +131,15 @@ public class GameManager : MonoBehaviour {
                 // jugador pierde
                 recursos[cartaIA.tipoCarta] += new Vector2(2, 0);
                 recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)]+=new Vector2(0,-1);
-
+				Debug.Log ("GANA IA");
                 break;
             case 0:
                 recursos[cartaIA.tipoCarta] += new Vector2(1, 0);
-                recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
+				recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
+				Debug.Log ("EMPATE");
                 break;
             case 1:
-
+				Debug.Log ("GANA JUGADOR");
                 switch (cartaJugador.especialidadCarta)
                 {
                     case (Card.ESPECIALIDAD.LENTA):
