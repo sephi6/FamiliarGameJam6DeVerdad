@@ -5,16 +5,11 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-	// VALORES INICIALES DE RECURSOS DE LA IA
-	public int piedra;
-	public int tijera;
-	public int papel;
-
     public enum estadosJuego { INICIO,ROBA,JUEGACARTA,DESTRUCCION,CONSTRUCCION,FIN_DE_TURNO,FIN,ESPERA}
 
     public estadosJuego estadoActual;
 
-    public static GameManager instance; // SINGLETON
+    public static GameManager instance; // SINGLETONe
 
 	public Dictionary<Card.TIPO, int> recursos = new Dictionary<Card.TIPO, int> ();
 
@@ -23,10 +18,6 @@ public class GameManager : MonoBehaviour {
 	public GameObject panel;
 
 	public System.Random rand;
-
-	public int piedraMareo;
-	public int tijeraMareo;
-	public int papelMareo;
 
 	public Text textoPiedra;
 	public Text textoTijera;
@@ -44,9 +35,11 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        recursos[Card.TIPO.PIEDRA] = piedra;
-        recursos[Card.TIPO.PAPEL] = papel;
-        recursos[Card.TIPO.TIJERA] = tijera;
+
+		recursos[Card.TIPO.PIEDRA] = 1;
+		recursos[Card.TIPO.PAPEL] = 1;
+		recursos[Card.TIPO.TIJERA] = 1;
+
 		rand = new System.Random (System.DateTime.Now.Millisecond);
         if (instance == null)
         {
@@ -62,7 +55,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		rand = new System.Random (System.DateTime.Now.Millisecond);
+		//rand = new System.Random (System.DateTime.Now.Millisecond);
 		cambiaTextos ();
 		repintaCartas ();
 		switch(estadoActual){
@@ -122,14 +115,15 @@ public class GameManager : MonoBehaviour {
 		for (int i = 0; i < n; i++) {
 			GameObject hijo = GameObject.Instantiate (prefabs [rand.Next (0, 9)]) as GameObject;
 			hijo.transform.parent = panel.transform;
-			hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0,0,-90));
+			hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0,0,90));
+			hijo.SetActive (true);
 			botones.Add (hijo);
 		}
 		repintaCartas ();
 	}
 
 	private void repintaCartas () {
-		int escalon = -60;
+		int escalon = 475;
 		int offset = -0;
 		foreach (GameObject boton in botones) {
 			boton.GetComponent<RectTransform> ().localPosition = new Vector3 (escalon + offset, 0, 0);
@@ -165,7 +159,10 @@ public class GameManager : MonoBehaviour {
 
 	private void iniciaJuego () {
 		congelado = Card.TIPO.NULL;
-		// robas tres cartas
+		recursos[Card.TIPO.PIEDRA] = 1 + rand.Next(0,3);
+		recursos[Card.TIPO.PAPEL] = 1 + rand.Next(0,3);
+		recursos[Card.TIPO.TIJERA] = 1 + rand.Next(0,3);
+		roba (3);
 		estadoActual = estadosJuego.ROBA;
 	}
 
@@ -188,7 +185,6 @@ public class GameManager : MonoBehaviour {
 		apagaBotones ();
 		// Buscamos la carta y la borramos
 		cartaJugador = new Card (tipo, especialidad);
-		// Desactivamos todos los botones
 		cartaIA = IAEligeCarta ();
 		congelado = Card.TIPO.NULL;
 		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
@@ -201,6 +197,7 @@ public class GameManager : MonoBehaviour {
 		Card resultado;
 		do { 
 			tipo = rand.Next (1, 4);
+			// tipo=Random.Range(1,4);
 		} while (isTipoBloqueado(tipo));
 		switch (tipo) {
 		case 1:
