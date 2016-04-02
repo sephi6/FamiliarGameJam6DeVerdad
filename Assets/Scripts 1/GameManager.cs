@@ -55,199 +55,29 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public void juegaCarta (Card cartaIA, Card cartaJugador) {
-
-        if (cartaIA.tipoCarta == Card.TIPO.CONSTRUCCION && cartaJugador.tipoCarta == Card.TIPO.TERREMOTO)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.CONSTRUCCION && cartaJugador.tipoCarta == Card.TIPO.LOCURA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.CONSTRUCCION && cartaJugador.tipoCarta == Card.TIPO.PLAGA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.MILITAR && cartaJugador.tipoCarta == Card.TIPO.LOCURA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.MILITAR && cartaJugador.tipoCarta == Card.TIPO.TERREMOTO)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.MILITAR && cartaJugador.tipoCarta == Card.TIPO.PLAGA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.CULTIVO && cartaJugador.tipoCarta == Card.TIPO.LOCURA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.CULTIVO && cartaJugador.tipoCarta == Card.TIPO.TERREMOTO)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else if (cartaIA.tipoCarta == Card.TIPO.CULTIVO && cartaJugador.tipoCarta == Card.TIPO.PLAGA)
-        {
-            if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.PRISA)
-            {
-
-            }
-            else if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.NORMAL)
-            {
-
-            }
-            else
-            {
-
-            }
-
-        }
-        else
-        {
-
+        switch (ganaJugador(cartaIA, cartaJugador)) {
+            case -1:
+                // jugador pierde
+                break;
+            case 0:
+                // empate
+                break;
+            case 1:
+                // jugador gana
+                break;
         }
 	}
 
-    public void ganaJugador(Card cartaIA, Card cartaJugador)
+    public int ganaJugador(Card cartaIA, Card cartaJugador)
     {
-
+        int resultado;
+        if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.TIJERA) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PAPEL) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.PIEDRA)) {
+            resultado = -1;
+        } else if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.PAPEL) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PIEDRA) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.TIJERA)) {
+            resultado = 0;
+        } else {
+            resultado = 1;
+        }
+        return resultado;
     }
-
-    
 }

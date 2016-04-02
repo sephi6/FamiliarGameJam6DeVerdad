@@ -5,12 +5,9 @@ public class Card : MonoBehaviour {
 
     public enum TIPO
     {
-        CULTIVO,
-        MILITAR,
-        CONSTRUCCION,
-        TERREMOTO,
-        PLAGA,
-        LOCURA
+        PIEDRA,
+        PAPEL,
+        TIJERA
     }
 
     public enum ESPECIALIDAD
@@ -29,7 +26,7 @@ public class Card : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
