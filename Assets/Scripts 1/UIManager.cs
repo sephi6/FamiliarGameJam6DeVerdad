@@ -39,40 +39,40 @@ public class UIManager : MonoBehaviour {
         switch (idButton)
         {
             case 1:
-                //PIEDRA NORMAL
-                gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA,Card.ESPECIALIDAD.NORMAL);
+            //PIEDRA NORMAL
+            gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA,Card.ESPECIALIDAD.NORMAL,idButton);
                 break;
             case 2:
-                //PIEDRA PRISA
-                gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA, Card.ESPECIALIDAD.PRISA);
+            //PIEDRA PRISA
+			gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA, Card.ESPECIALIDAD.PRISA,idButton);
                 break;
             case 3:
-                //PIEDRA LENTA
-                gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA, Card.ESPECIALIDAD.LENTA);
+            //PIEDRA LENTA
+			gameManager.seleccionaCartaJugador(Card.TIPO.PIEDRA, Card.ESPECIALIDAD.LENTA,idButton);
                 break;
             case 4:
-                //PIEDRA NORMAL
-                gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.NORMAL);
+            //PIEDRA NORMAL
+			gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.NORMAL,idButton);
                 break;
             case 5:
-                //PIEDRA PRISA
-                gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.PRISA);
+            //PIEDRA PRISA
+			gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.PRISA,idButton);
                 break;
             case 6:
-                //PIEDRA LENTA
-                gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.LENTA);
+            //PIEDRA LENTA
+			gameManager.seleccionaCartaJugador(Card.TIPO.PAPEL, Card.ESPECIALIDAD.LENTA,idButton);
                 break;
             case 7:
-                //PIEDRA NORMAL
-                gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA,Card.ESPECIALIDAD.NORMAL);
+            //PIEDRA NORMAL
+			gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA,Card.ESPECIALIDAD.NORMAL,idButton);
                 break;
             case 8:
-                //PIEDRA PRISA
-                gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA, Card.ESPECIALIDAD.PRISA);
+            //PIEDRA PRISA
+			gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA, Card.ESPECIALIDAD.PRISA,idButton);
                 break;
             case 9:
-                //PIEDRA LENTA
-                gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA, Card.ESPECIALIDAD.LENTA);
+            //PIEDRA LENTA
+			gameManager.seleccionaCartaJugador(Card.TIPO.TIJERA, Card.ESPECIALIDAD.LENTA,idButton);
                 break;
         }
     }
