@@ -230,7 +230,7 @@ public class GameManager : MonoBehaviour {
 				resultado = false;
 			break;
 		}
-		return false;
+		return resultado;
 	}
 
     public void juegaCarta()
