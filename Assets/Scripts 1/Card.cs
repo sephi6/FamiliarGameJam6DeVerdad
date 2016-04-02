@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Card : MonoBehaviour {
+public class Card {
 
     public enum TIPO
     {
         PIEDRA,
         PAPEL,
-        TIJERA
+        TIJERA,
+		NULL
     }
 
     public enum ESPECIALIDAD
@@ -21,18 +22,6 @@ public class Card : MonoBehaviour {
     public TIPO tipoCarta;
     public ESPECIALIDAD especialidadCarta;
     public Vector2 sumadores;
-
-
-
-	// Use this for initialization
-	void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     public Card(TIPO tipoCarta, ESPECIALIDAD especialidadCarta)
     {

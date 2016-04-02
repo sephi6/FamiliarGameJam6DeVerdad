@@ -5,17 +5,18 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
+	// VALORES INICIALES DE RECURSOS DE LA IA
 	public int piedra;
 	public int tijera;
 	public int papel;
 
-    public enum estadosJuego { ROBA,JUEGACARTA,MAREO,CONSTRUCCION}
+    public enum estadosJuego { INICIO,ROBA,JUEGACARTA,DESTRUCCION,CONSTRUCCION,FIN_DE_TURNO,FIN,ESPERA}
 
     public estadosJuego estadoActual;
 
     public static GameManager instance; // SINGLETON
 
-	public Dictionary<Card.TIPO, Vector2> recursos = new Dictionary<Card.TIPO, Vector2> ();
+	public Dictionary<Card.TIPO, int> recursos = new Dictionary<Card.TIPO, int> ();
 
 	public int piedraMareo;
 	public int tijeraMareo;
@@ -25,17 +26,19 @@ public class GameManager : MonoBehaviour {
 	public Text textoTijera;
 	public Text textoPapel;
 
-	public Text textoPiedraMareo;
-	public Text textoTijeraMareo;
-	public Text textoPapelMareo;
+	private Card cartaIA;
+	private Card cartaJugador;
 
 	private bool botonActivo;
+	private bool playerContrarestado;
+	private bool IAContrarestada;
+	private Card.TIPO congelado;
 
 	// Use this for initialization
 	void Start () {
-        recursos[Card.TIPO.PIEDRA]=new Vector2(piedraMareo,piedra);
-        recursos[Card.TIPO.PAPEL] = new Vector2(papelMareo, papel);
-        recursos[Card.TIPO.TIJERA] = new Vector2(tijeraMareo, tijera);
+        recursos[Card.TIPO.PIEDRA] = piedra;
+        recursos[Card.TIPO.PAPEL] = papel;
+        recursos[Card.TIPO.TIJERA] = tijera;
         
         if (instance == null)
         {
@@ -44,43 +47,43 @@ public class GameManager : MonoBehaviour {
         else
         {
             Debug.LogError("Se ha detectado más de una instancia");
-        }
-            
-        estadoActual = estadosJuego.JUEGACARTA;
-		iniciaJuego ();
+		}
+		botonActivo = false;
+		estadoActual = estadosJuego.INICIO;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		cambiaTextos ();
-        switch(estadoActual){
-            case(estadosJuego.ROBA): break;//ROBACARTA
-            case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
-            case(estadosJuego.MAREO): break;//MAREO
-            case(estadosJuego.CONSTRUCCION): break;//CONSTRUCCION
+		switch(estadoActual){
+		case(estadosJuego.ESPERA):break; // No hagas nada quillo
+		case(estadosJuego.INICIO):
+			estadoActual = estadosJuego.ESPERA;
+			iniciaJuego ();
+			break; // Nueva partida
+		case(estadosJuego.FIN_DE_TURNO):break; // Calculamos si perdemos
+		case(estadosJuego.FIN):break; // La partida ya terminó
+        case(estadosJuego.ROBA): break;//ROBACARTA
+	    case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
+		case(estadosJuego.DESTRUCCION):
+			estadoActual = estadosJuego.ESPERA;
+			resuelveJugada (); 
+			break; // DESTRUCCIÓN DE RECURSOS, CONGELACIÓN y ROBO
+		case(estadosJuego.CONSTRUCCION):
+			estadoActual = estadosJuego.ESPERA;
+			resuelveMareo ();
+			break; // CONSTRUCCION Y COUNTER
         }
 	}
 
 	private void iniciaJuego () {
-		//this.piedra = piedra;
-		
-		//tijera = 2;
-
-		//piedraMareo = 0;
-		//tijeraMareo = 0;
-		//papelMareo = 0;
-
-		botonActivo = true;
+		congelado = Card.TIPO.NULL;
 	}
 
 	private void cambiaTextos () {
-        textoPiedra.text = (recursos[Card.TIPO.PIEDRA][1]).ToString();
-        textoTijera.text = (recursos[Card.TIPO.TIJERA][1]).ToString();
-        textoPapel.text = (recursos[Card.TIPO.PAPEL][1]).ToString();
-
-        textoPiedraMareo.text = (recursos[Card.TIPO.PIEDRA][0]).ToString();
-        textoTijeraMareo.text = (recursos[Card.TIPO.TIJERA][0]).ToString();
-        textoPapelMareo.text = (recursos[Card.TIPO.PAPEL][0]).ToString();
+		textoPiedra.text = recursos[Card.TIPO.PIEDRA].ToString();
+		textoTijera.text = recursos[Card.TIPO.TIJERA].ToString();
+		textoPapel.text = recursos[Card.TIPO.PAPEL].ToString();
 	}
 
 	/// <summary>
@@ -90,12 +93,13 @@ public class GameManager : MonoBehaviour {
 	/// <param name="cartaJugador">Carta jugador.</param>
 	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad) {
 		// TODO: Comprobar que podemos crear la carta (por si no tenemos caras de ese tipo)
-		Card cartaJugador = new Card (tipo, especialidad);
+		cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
-		Card cartaIA = IAEligeCarta ();
+		cartaIA = IAEligeCarta ();
+		congelado = Card.TIPO.NULL;
 		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
 		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );
-		juegaCarta (cartaIA, cartaJugador);
+		juegaCarta ();
 	}
 
 	public Card IAEligeCarta () {
@@ -103,7 +107,7 @@ public class GameManager : MonoBehaviour {
 		Card resultado;
 		do { 
 			tipo = new System.Random ().Next (1, 4);
-		} while (false);
+		} while (isTipoBloqueado(tipo));
 		switch (tipo) {
 		case 1:
 			resultado = new Card (Card.TIPO.PIEDRA, Card.ESPECIALIDAD.MAQUINA);
@@ -120,114 +124,109 @@ public class GameManager : MonoBehaviour {
 
 	public bool isTipoBloqueado (int tipo) {
 		// Conductor, esto servirá para determinar cuando la IA no puede jugar un tipo de carta
+		bool resultado = false;
+		switch (tipo) {
+		case 1:
+			resultado = (congelado == Card.TIPO.PIEDRA) ? false : true;
+			break;
+		case 2:
+			resultado = (congelado == Card.TIPO.PAPEL) ? false : true;
+			break;
+		case 3:
+			resultado = (congelado == Card.TIPO.TIJERA) ? false : true;
+			break;
+		}
 		return false;
 	}
 
-    public void juegaCarta(Card cartaIA, Card cartaJugador)
+    public void juegaCarta()
     {
-        switch (ganador(cartaIA, cartaJugador))
-        {
-            case -1:
-                // jugador pierde
-                recursos[cartaIA.tipoCarta] += new Vector2(2, 0);
-                recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)]+=new Vector2(0,-1);
-				Debug.Log ("GANA IA");
-                break;
-            case 0:
-                recursos[cartaIA.tipoCarta] += new Vector2(1, 0);
-				recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
-				Debug.Log ("EMPATE");
-                break;
-            case 1:
-				Debug.Log ("GANA JUGADOR");
-                switch (cartaJugador.especialidadCarta)
-                {
-                    case (Card.ESPECIALIDAD.LENTA):
-                        recursos[cartaIA.tipoCarta] += new Vector2(1, -2);
-                        break; //0,-2 en fase construccion
-                    case (Card.ESPECIALIDAD.NORMAL):
-                        recursos[cartaIA.tipoCarta] += new Vector2(0, -1);
-                        break; // -1,-1 en fase construccion
-                    case (Card.ESPECIALIDAD.PRISA): break; //-1,Freeze y roba
-                        
-                }
-                break;
-        }
+		// Mostrar cartas jugdas
+		// Esperar hasta que las animciones terminen
+		estadoActual = estadosJuego.CONSTRUCCION;
     }
 
-    public void resuelveMareo(Card cartaIA, Card cartaJugador)
+
+	public void construye (Card.TIPO tipo) {
+		// RESGUARDO
+		// Animación de construcción
+		recursos[tipo] += 1;
+		Debug.Log ("IA construye un " + tipo);
+	}
+
+    public void resuelveMareo()
     {
-        switch (ganador(cartaIA, cartaJugador))
-        {
-            case -1:
-                // jugador pierde
-                recursos[cartaIA.tipoCarta] += new Vector2(2, 0);
-                //JUGADOR NO QUITA NADA EN FASE MAREO
-                
+		switch (ganador ()) {
+		case -1:
+			Debug.Log ("Te han contrarestado");
+			// animación de counter?
+			playerContrarestado = true;
+			IAContrarestada = false;
+			construye (cartaIA.tipoCarta);
+			break;
 
-                break;
-            case 0:
-                recursos[cartaIA.tipoCarta] += new Vector2(1, 0);
-                //JUGADOR NO QUITA NADA EN FASE MAREO
-                
-                break;
-            case 1:
+		case 0:
+			if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA) {
+				Debug.Log ("Lentas no contrrestan");
+				playerContrarestado = false;
+				IAContrarestada = false;
+				construye (cartaIA.tipoCarta);
+			} else {
+				Debug.Log ("Double counter");
+				// animación de counter?
+				playerContrarestado = true;
+				IAContrarestada = true;
+			}
+			break;
 
-                switch (cartaJugador.especialidadCarta)
-                {
-                    case (Card.ESPECIALIDAD.LENTA):
-                        recursos[cartaIA.tipoCarta] += new Vector2(1, 0);
-                        break; //0,-2 en fase construccion
-                    case (Card.ESPECIALIDAD.NORMAL):
-                        //NO SUMA NADA A MAREO
-                        break; // -1,-1 en fase construccion
-                    case (Card.ESPECIALIDAD.PRISA): break; //-1,Freeze y roba
-
-                }
-                break;
-                
-        }
-        estadoActual = estadosJuego.CONSTRUCCION;
+		case 1:
+			if (cartaJugador.especialidadCarta == Card.ESPECIALIDAD.LENTA) {
+				Debug.Log ("Lentas no contrrestan");
+				playerContrarestado = false;
+				IAContrarestada = false;
+				construye (cartaIA.tipoCarta);
+			} else {
+				Debug.Log ("Contrarestas a la IA");
+				// animación de counter?
+				playerContrarestado = false;
+				IAContrarestada = true;
+			}
+			break;
+		}
+        estadoActual = estadosJuego.DESTRUCCION;
     }
 
-    public void resuelveConstruccion(Card cartaIA, Card cartaJugador)
+	/// <summary>
+	/// Termin la jugada en función de si has sido contrrestado o no
+	/// </summary>
+	/// <param name="cartaIA">Carta I.</param>
+	/// <param name="cartaJugador">Carta jugador.</param>
+    public void resuelveJugada()
     {
-        switch (ganador(cartaIA, cartaJugador))
-        {
-            case -1:
-                // jugador pierde
-                recursos[cartaIA.tipoCarta] += new Vector2(-2, 2);
-                recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
-
-
-                break;
-            case 0:
-                recursos[cartaIA.tipoCarta] += new Vector2(-1, 1);
-                recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
-
-                break;
-            case 1:
-
-                switch (cartaJugador.especialidadCarta)
-                {
-                    case (Card.ESPECIALIDAD.LENTA):
-                        recursos[cartaIA.tipoCarta] += new Vector2(-1, 1);
-                        recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -2);
-                        break; //0,-2 en fase construccion
-                    case (Card.ESPECIALIDAD.NORMAL):
-                        recursos[cartaIA.tipoCarta] += new Vector2(0, -1);
-                        //NO SUMA NADA A MAREO
-                        break; // -1,-1 en fase construccion
-                    case (Card.ESPECIALIDAD.PRISA): break; //-1,Freeze y roba
-
-                }
-                break;
-                
-        }
-        estadoActual = estadosJuego.ROBA;
+		if (!playerContrarestado) {
+			switch (cartaJugador.especialidadCarta) {
+			case Card.ESPECIALIDAD.LENTA:
+				recursos [cartaJugador.tipoCarta] -= 3;
+				Debug.Log ("PIM, destruyes 3 " + cartaJugador.tipoCarta);
+				break;
+			case Card.ESPECIALIDAD.PRISA:
+				congelado = cartaJugador.tipoCarta;
+				// Roba una carta
+				Debug.Log ("Congelas " + cartaJugador.tipoCarta);
+				break;
+			case Card.ESPECIALIDAD.NORMAL:
+				recursos [cartaJugador.tipoCarta] -= 1;
+				Debug.Log ("Destruyes 1 " + cartaJugador.tipoCarta);
+				break;
+			default:
+				Debug.Log ("EL JUGADOR HA ESCOGIDO UNA CARTA DE LA MAQUINA, MILAGRO!!");
+				break;
+			}
+		}
+        estadoActual = estadosJuego.FIN_DE_TURNO;
     }
 
-    public int ganador(Card cartaIA, Card cartaJugador)
+    public int ganador()
     {
         int resultado;
         if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.TIJERA) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PAPEL) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.PIEDRA)) {
