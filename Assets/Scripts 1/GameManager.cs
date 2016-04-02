@@ -61,14 +61,17 @@ public class GameManager : MonoBehaviour {
 		switch(estadoActual){
 		case(estadosJuego.ESPERA):break; // No hagas nada quillo
 		case(estadosJuego.INICIO):
+			Debug.Log ("Estado inicio");
 			estadoActual = estadosJuego.ESPERA;
 			iniciaJuego ();
 			break; // Nueva partida
 		case(estadosJuego.FIN_DE_TURNO):
+			Debug.Log ("Estado fin de turno");
 			estadoActual = estadosJuego.ESPERA;
 			turno ();
 			break; // Calculamos si perdemos
 		case(estadosJuego.FIN):
+			Debug.Log ("Estado fin de juego");
 			estadoActual = estadosJuego.ESPERA;
 			if (jugarOtraPartida ())
 				estadoActual = estadosJuego.ESPERA;
@@ -76,16 +79,19 @@ public class GameManager : MonoBehaviour {
 				finDeJuego ();
 			break; // La partida ya terminó
 		case(estadosJuego.ROBA):
+			Debug.Log ("Estado roba");
 			estadoActual = estadosJuego.ESPERA;
 			roba (cuantasRobo());
 			enciendeBotones ();
 			break;//ROBACARTA
 	    case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
 		case(estadosJuego.DESTRUCCION):
+			Debug.Log ("Estado destruccion");
 			estadoActual = estadosJuego.ESPERA;
 			resuelveJugada (); 
 			break; // DESTRUCCIÓN DE RECURSOS, CONGELACIÓN y ROBO
 		case(estadosJuego.CONSTRUCCION):
+			Debug.Log ("Estado construccion");
 			estadoActual = estadosJuego.ESPERA;
 			resuelveMareo ();
 			break; // CONSTRUCCION Y COUNTER
@@ -113,11 +119,13 @@ public class GameManager : MonoBehaviour {
 	private void roba (int n) {
 		// añade n botones a la lista y a la escena
 		for (int i = 0; i < n; i++) {
-			GameObject hijo = GameObject.Instantiate (prefabs [rand.Next (0, 9)]) as GameObject;
-			hijo.transform.parent = panel.transform;
-			hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0,0,90));
-			hijo.SetActive (true);
-			botones.Add (hijo);
+			if (botones.Count < 9) {
+				GameObject hijo = GameObject.Instantiate (prefabs [rand.Next (0, 9)]) as GameObject;
+				hijo.transform.parent = panel.transform;
+				hijo.GetComponent<RectTransform> ().Rotate (new Vector3 (0, 0, 90));
+				hijo.SetActive (true);
+				botones.Add (hijo);
+			}
 		}
 		repintaCartas ();
 	}
@@ -184,8 +192,10 @@ public class GameManager : MonoBehaviour {
 	public void seleccionaCartaJugador (Card.TIPO tipo, Card.ESPECIALIDAD especialidad, int idCarta) {
 		apagaBotones ();
 		// Buscamos la carta y la borramos
+		Debug.Log ("NIANO");
 		cartaJugador = new Card (tipo, especialidad);
 		cartaIA = IAEligeCarta ();
+		Debug.Log ("CHU");
 		congelado = Card.TIPO.NULL;
 		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
 		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );
@@ -214,22 +224,21 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public bool isTipoBloqueado (int tipo) {
-		// Conductor, esto servirá para determinar cuando la IA no puede jugar un tipo de carta
 		bool resultado = false;
 		switch (tipo) {
 		case 1:
-			resultado = (congelado == Card.TIPO.PIEDRA) ? false : true;
-			if (recursos [Card.TIPO.PIEDRA] > 4)
+			resultado = (congelado == Card.TIPO.PIEDRA) ? true : false;
+			if (recursos [Card.TIPO.PIEDRA] > 5)
 				resultado = false;
 			break;
 		case 2:
-			resultado = (congelado == Card.TIPO.PAPEL) ? false : true;
-			if (recursos [Card.TIPO.PAPEL] > 4)
+			resultado = (congelado == Card.TIPO.PAPEL) ? true : false;
+			if (recursos [Card.TIPO.PAPEL] > 5)
 				resultado = false;
 			break;
 		case 3:
-			resultado = (congelado == Card.TIPO.TIJERA) ? false : true;
-			if (recursos [Card.TIPO.TIJERA] > 4)
+			resultado = (congelado == Card.TIPO.TIJERA) ? true : false;
+			if (recursos [Card.TIPO.TIJERA] > 5)
 				resultado = false;
 			break;
 		}

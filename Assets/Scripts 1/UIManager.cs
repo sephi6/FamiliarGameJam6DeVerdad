@@ -36,6 +36,7 @@ public class UIManager : MonoBehaviour {
 
     public void cartaSeleccionada(int idButton)
     {
+		Debug.Log ("UIManager, seleccionando el boton con id " + idButton);
         switch (idButton)
         {
             case 1:
