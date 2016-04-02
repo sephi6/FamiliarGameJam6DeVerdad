@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager instance; // SINGLETON
 
-    public Dictionary<Card.TIPO, Vector2> recursos;
+	public Dictionary<Card.TIPO, Vector2> recursos = new Dictionary<Card.TIPO, Vector2> ();
 
 	public int piedraMareo;
 	public int tijeraMareo;
@@ -92,7 +92,33 @@ public class GameManager : MonoBehaviour {
 		// TODO: Comprobar que podemos crear la carta (por si no tenemos caras de ese tipo)
 		Card cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
-		// Card cartaIA = IAEligeCarta ();
+		Card cartaIA = IAEligeCarta ();
+		juegaCarta (cartaIA, cartaJugador);
+	}
+
+	public Card IAEligeCarta () {
+		int tipo;
+		Card resultado;
+		do { 
+			tipo = new System.Random ().Next (1, 4);
+		} while (false);
+		switch (tipo) {
+		case 1:
+			resultado = new Card (Card.TIPO.PIEDRA, Card.ESPECIALIDAD.MAQUINA);
+			break;
+		case 2:
+			resultado = new Card (Card.TIPO.PAPEL, Card.ESPECIALIDAD.MAQUINA);
+			break;
+		default:
+			resultado = new Card (Card.TIPO.TIJERA, Card.ESPECIALIDAD.MAQUINA);
+			break;
+		}
+		return resultado;
+	}
+
+	public bool isTipoBloqueado (int tipo) {
+		// Conductor, esto servirá para determinar cuando la IA no puede jugar un tipo de carta
+		return false;
 	}
 
     public void juegaCarta(Card cartaIA, Card cartaJugador)
