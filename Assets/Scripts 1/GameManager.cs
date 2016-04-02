@@ -131,14 +131,15 @@ public class GameManager : MonoBehaviour {
                 // jugador pierde
                 recursos[cartaIA.tipoCarta] += new Vector2(2, 0);
                 recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)]+=new Vector2(0,-1);
-
+				Debug.Log ("GANA IA");
                 break;
             case 0:
                 recursos[cartaIA.tipoCarta] += new Vector2(1, 0);
-                recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
+				recursos[devuelveTipoPerdedor(cartaJugador.tipoCarta)] += new Vector2(0, -1);
+				Debug.Log ("EMPATE");
                 break;
             case 1:
-
+				Debug.Log ("GANA JUGADOR");
                 switch (cartaJugador.especialidadCarta)
                 {
                     case (Card.ESPECIALIDAD.LENTA):
