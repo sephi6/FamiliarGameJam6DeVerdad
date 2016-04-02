@@ -93,6 +93,8 @@ public class GameManager : MonoBehaviour {
 		Card cartaJugador = new Card (tipo, especialidad);
 		// Desactivamos todos los botones
 		Card cartaIA = IAEligeCarta ();
+		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
+		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );
 		juegaCarta (cartaIA, cartaJugador);
 	}
 
