@@ -33,8 +33,9 @@ public class CalculaPosicion : MonoBehaviour {
         prueba.Add(cultivo);
         prueba.Add(militar);
         prueba.Add(construccion);
-       // prueba.Add(ruina);
-        for (int i = 0; i < posiciones.Length;i++ )
+       	// prueba.Add(ruina);
+		/*
+       for (int i = 0; i < posiciones.Length;i++ )
        {
             int random=Random.Range(0, 2);
             if (random == 0)
@@ -47,12 +48,18 @@ public class CalculaPosicion : MonoBehaviour {
                posicionesOcupadas[i] = false;
             }
         }
+        */
 	
+	}
+
+	public void log () {
+		Debug.Log ("OK");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
+		/*
         if (Input.GetKeyDown(KeyCode.W))
         {
            int random= Random.Range(0, 12);
@@ -66,6 +73,7 @@ public class CalculaPosicion : MonoBehaviour {
                Debug.Log("Posición ocupada");
            }
         }
+        */
 	
 	}
 
@@ -77,13 +85,10 @@ public class CalculaPosicion : MonoBehaviour {
 
     public void construye(int pos, Recurso recurso)
     {
-            posicionesOcupadas[pos] = true;
-            
-            Instantiate(recurso, posiciones[pos].transform.position,Quaternion.identity);
-            diccionarioDeCosas[recurso.tipo].Add(pos);
-            
-            
-        
+		posicionesOcupadas[pos] = (recurso.tipo == Card.TIPO.NULL) ? false : true;
+		Debug.Log ("posicion: " + pos + " recurso: " + recurso.tipo + " ocupado: " + posicionesOcupadas[pos]);
+        Instantiate(recurso, posiciones[pos].transform.position,Quaternion.identity);
+        diccionarioDeCosas[recurso.tipo].Add(pos);
     }
 
     public int consiguePosicionLibreOrdenado()
@@ -111,8 +116,7 @@ public class CalculaPosicion : MonoBehaviour {
             if (!posicionesOcupadas[random])
             {
                 res=random;
-                break;
-                
+				bucle = false;
             }
         }
         return res;

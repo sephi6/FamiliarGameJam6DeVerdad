@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour {
 	public List<GameObject> botones;
 	public List<GameObject> prefabs;
 	public GameObject panel;
+	public CalculaPosicion calculaPosicion;
+	public GameObject panelVictoria;
+	public Text textoVictoria;
 
 	public System.Random rand;
 
@@ -32,13 +35,14 @@ public class GameManager : MonoBehaviour {
 
 	private Card.TIPO congelado;
 
-	// Use this for initialization
+	// Use this for initializa
 	void Start () {
 
 		recursos[Card.TIPO.PIEDRA] = 1;
 		recursos[Card.TIPO.PAPEL] = 1;
 		recursos[Card.TIPO.TIJERA] = 1;
-
+		calculaPosicion = (CalculaPosicion) this.GetComponent<CalculaPosicion> ();
+		calculaPosicion.log ();
 		rand = new System.Random (System.DateTime.Now.Millisecond);
         if (instance == null)
         {
