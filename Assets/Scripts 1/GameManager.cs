@@ -388,7 +388,7 @@ public class GameManager : MonoBehaviour {
 					sigue = destruye (cartaJugador.tipoCarta);
 				}
 				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0 : recursos [cartaJugador.tipoCarta];
-				int diferencia = recursos [cartaJugador.tipoCarta] - recursosAntes;
+				int diferencia = recursosAntes - recursos [cartaJugador.tipoCarta];
 				if (diferencia > 1) {
 					textMaquina.text = ("BOOM!!! You just destroyed " + diferencia + " city resources.");
 				} else if (diferencia > 0) {
