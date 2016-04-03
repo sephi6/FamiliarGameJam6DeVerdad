@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-    public enum estadosJuego { INICIO,ROBA,JUEGACARTA,DESTRUCCION,CONSTRUCCION,FIN_DE_TURNO,FIN,ESPERA}
-    public estadosJuego estadoActual;
+	public enum estadosJuego { INICIO,ROBA,JUEGACARTA,DESTRUCCION,CONSTRUCCION,FIN_DE_TURNO,FIN,ESPERA}
+	public estadosJuego estadoActual;
 
-    public static GameManager instance; // SINGLETONe
+	public static GameManager instance; // SINGLETONe
 
 	public Dictionary<Card.TIPO, int> recursos = new Dictionary<Card.TIPO, int> ();
 
@@ -44,18 +44,18 @@ public class GameManager : MonoBehaviour {
 		calculaPosicion = (CalculaPosicion) this.GetComponent<CalculaPosicion> ();
 		calculaPosicion.log ();
 		rand = new System.Random (System.DateTime.Now.Millisecond);
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Debug.LogError("Se ha detectado más de una instancia");
+		if (instance == null)
+		{
+			instance = this;
+		}
+		else
+		{
+			Debug.LogError("Se ha detectado más de una instancia");
 		}
 		botonActivo = false;
 		estadoActual = estadosJuego.INICIO;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		//rand = new System.Random (System.DateTime.Now.Millisecond);
@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour {
 			roba (cuantasRobo());
 			enciendeBotones ();
 			break;//ROBACARTA
-	    case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
+		case(estadosJuego.JUEGACARTA): break; //JUEGACARTA
 		case(estadosJuego.DESTRUCCION):
 			Debug.Log ("Estado destruccion");
 			estadoActual = estadosJuego.ESPERA;
@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour {
 			estadoActual = estadosJuego.ESPERA;
 			resuelveMareo ();
 			break; // CONSTRUCCION Y COUNTER
-        }
+		}
 	}
 
 	private int cuantasRobo () {
@@ -178,6 +178,19 @@ public class GameManager : MonoBehaviour {
 		recursos[Card.TIPO.PAPEL] = 1 + rand.Next(0,3);
 		recursos[Card.TIPO.TIJERA] = 1 + rand.Next(0,3);
 		roba (3);
+
+		for (int i = 0; i < recursos [Card.TIPO.PIEDRA]; i++) {
+			calculaPosicion.construye (Card.TIPO.PIEDRA, false);
+		}
+
+		for (int i = 0; i < recursos [Card.TIPO.PAPEL]; i++) {
+			calculaPosicion.construye (Card.TIPO.PAPEL, false);
+		}
+
+		for (int i = 0; i < recursos [Card.TIPO.TIJERA]; i++) {
+			calculaPosicion.construye (Card.TIPO.TIJERA, false);
+		}
+
 		estadoActual = estadosJuego.ROBA;
 	}
 
@@ -255,14 +268,16 @@ public class GameManager : MonoBehaviour {
 		return resultado;
 	}
 
-    public void juegaCarta()
-    {
+	public void juegaCarta()
+	{
 		// Mostrar cartas jugdas6y6
 		// Esperar hasta que las animciones terminen
 		// Borrar carta de la escena y la lista
 
+		//
+
 		estadoActual = estadosJuego.CONSTRUCCION;
-    }
+	}
 
 
 	public void construye (Card.TIPO tipo) {
@@ -272,8 +287,8 @@ public class GameManager : MonoBehaviour {
 		Debug.Log ("IA construye un " + tipo);
 	}
 
-    public void resuelveMareo()
-    {
+	public void resuelveMareo()
+	{
 		switch (ganador ()) {
 		case -1:
 			Debug.Log ("Te han contrarestado");
@@ -311,7 +326,7 @@ public class GameManager : MonoBehaviour {
 			}
 			break;
 		}
-        estadoActual = estadosJuego.DESTRUCCION;
+		estadoActual = estadosJuego.DESTRUCCION;
 	}
 
 	public void apagaBotones () {
@@ -331,8 +346,8 @@ public class GameManager : MonoBehaviour {
 	/// </summary>
 	/// <param name="cartaIA">Carta I.</param>
 	/// <param name="cartaJugador">Carta jugador.</param>
-    public void resuelveJugada()
-    {
+	public void resuelveJugada()
+	{
 		if (!playerContrarestado) {
 			switch (cartaJugador.especialidadCarta) {
 			case Card.ESPECIALIDAD.LENTA:
@@ -355,55 +370,55 @@ public class GameManager : MonoBehaviour {
 				break;
 			}
 		}
-        estadoActual = estadosJuego.FIN_DE_TURNO;
-    }
+		estadoActual = estadosJuego.FIN_DE_TURNO;
+	}
 
-    public int ganador()
-    {
-        int resultado;
-        if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.TIJERA) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PAPEL) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.PIEDRA)) {
-            resultado = -1;
-        } else if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.PAPEL) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PIEDRA) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.TIJERA)) {
-            resultado = 0;
-        } else {
-            resultado = 1;
-        }
-        return resultado;
-    }
+	public int ganador()
+	{
+		int resultado;
+		if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.TIJERA) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PAPEL) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.PIEDRA)) {
+			resultado = -1;
+		} else if ((cartaJugador.tipoCarta == Card.TIPO.PAPEL && cartaIA.tipoCarta == Card.TIPO.PAPEL) || (cartaJugador.tipoCarta == Card.TIPO.PIEDRA && cartaIA.tipoCarta == Card.TIPO.PIEDRA) ||(cartaJugador.tipoCarta == Card.TIPO.TIJERA && cartaIA.tipoCarta == Card.TIPO.TIJERA)) {
+			resultado = 0;
+		} else {
+			resultado = 1;
+		}
+		return resultado;
+	}
 
-    public Card.TIPO devuelveTipoGanador(Card.TIPO tipo)
-    {
-        Card.TIPO res;
-        if (tipo == Card.TIPO.PIEDRA)
-        {
-            res = Card.TIPO.PAPEL;
-        }
-        else if (tipo == Card.TIPO.PAPEL)
-        {
-            res = Card.TIPO.TIJERA;
-        }
-        else
-        {
-            res = Card.TIPO.PIEDRA;
-        }
-        return res;
-    }
+	public Card.TIPO devuelveTipoGanador(Card.TIPO tipo)
+	{
+		Card.TIPO res;
+		if (tipo == Card.TIPO.PIEDRA)
+		{
+			res = Card.TIPO.PAPEL;
+		}
+		else if (tipo == Card.TIPO.PAPEL)
+		{
+			res = Card.TIPO.TIJERA;
+		}
+		else
+		{
+			res = Card.TIPO.PIEDRA;
+		}
+		return res;
+	}
 
-    public Card.TIPO devuelveTipoPerdedor(Card.TIPO tipo)
-    {
-        Card.TIPO res;
-        if (tipo == Card.TIPO.PIEDRA)
-        {
-            res = Card.TIPO.TIJERA;
-        }
-        else if (tipo == Card.TIPO.PAPEL)
-        {
-            res = Card.TIPO.PIEDRA;
-        }
-        else
-        {
-            res = Card.TIPO.PAPEL;
-        }
-        return res;
-    }
+	public Card.TIPO devuelveTipoPerdedor(Card.TIPO tipo)
+	{
+		Card.TIPO res;
+		if (tipo == Card.TIPO.PIEDRA)
+		{
+			res = Card.TIPO.TIJERA;
+		}
+		else if (tipo == Card.TIPO.PAPEL)
+		{
+			res = Card.TIPO.PIEDRA;
+		}
+		else
+		{
+			res = Card.TIPO.PAPEL;
+		}
+		return res;
+	}
 }
