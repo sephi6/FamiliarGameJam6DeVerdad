@@ -98,7 +98,7 @@ public class GameManager : MonoBehaviour {
 		case(estadosJuego.DESTRUCCION):
 			Debug.Log ("Estado destruccion");
 			estadoActual = estadosJuego.ESPERA;
-			resuelveJugada (); 
+			resuelveJugada ();
 			break; // DESTRUCCIÓN DE RECURSOS, CONGELACIÓN y ROBO
 		case(estadosJuego.CONSTRUCCION):
 			Debug.Log ("Estado construccion");
@@ -382,19 +382,44 @@ public class GameManager : MonoBehaviour {
 		if (!playerContrarestado) {
 			switch (cartaJugador.especialidadCarta) {
 			case Card.ESPECIALIDAD.LENTA:
+				int recursosAntes = recursos [cartaJugador.tipoCarta];
 				bool sigue = true;
 				for (int i = 0; i < 3 && sigue; i++) {
 					sigue = destruye (cartaJugador.tipoCarta);
 				}
-				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
+				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0 : recursos [cartaJugador.tipoCarta];
+				int diferencia = recursos [cartaJugador.tipoCarta] - recursosAntes;
+				if (diferencia > 1) {
+					textMaquina.text = ("BOOM!!! You just destroyed " + diferencia + " city resources.");
+				} else if (diferencia > 0) {
+					textMaquina.text = ("You just destroyed a city resource.");
+				} else {
+					textMaquina.text = ("MISS!!! no resources have been destroyed");
+				}
+
 				break;
 			case Card.ESPECIALIDAD.PRISA:
 				congelado = cartaJugador.tipoCarta;
 				roba (1);
-				// ANIMACION DE CONGELACION
+				textMaquina.text = ("FREEZE!!! The city won't build ");
+				switch (cartaJugador.tipoCarta) {
+				case Card.TIPO.PIEDRA:
+					textMaquina.text += ("Construction");
+					break;
+				case Card.TIPO.PAPEL:
+					textMaquina.text += ("Farm");
+					break;
+				case Card.TIPO.TIJERA:
+					textMaquina.text += ("Quarters");
+					break;
+				}
+				textMaquina.text += (" on the next turn");
 				break;
 			case Card.ESPECIALIDAD.NORMAL:
-				destruye(cartaJugador.tipoCarta);
+				if (destruye(cartaJugador.tipoCarta))
+					textMaquina.text = ("You just destroyed a city resource.");
+				else
+					textMaquina.text = ("MISS!!! no resources have been destroyed");
 				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
 				break;
 			default:
@@ -402,7 +427,8 @@ public class GameManager : MonoBehaviour {
 				break;
 			}
 		}
-		estadoActual = estadosJuego.FIN_DE_TURNO;
+		StartCoroutine(llamaTextoJugada());
+		espera.paradaDestruccion ();
 	}
 
 	public bool destruye (Card.TIPO tipo) {

@@ -26,7 +26,7 @@ public class Espera : MonoBehaviour {
 	}
 
 	IEnumerator construccion() {
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(4);
 		gameManager.estadoActual = GameManager.estadosJuego.DESTRUCCION;
 	}
 
