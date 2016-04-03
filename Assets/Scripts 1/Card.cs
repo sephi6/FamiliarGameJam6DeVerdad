@@ -8,7 +8,8 @@ public class Card {
         PIEDRA,
         PAPEL,
         TIJERA,
-		NULL
+		NULL,
+		VACIO
     }
 
     public enum ESPECIALIDAD
