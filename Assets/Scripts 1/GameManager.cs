@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour {
 	public CalculaPosicion calculaPosicion;
 	public GameObject panelVictoria;
 	public Text textoVictoria;
+	public Espera espera;
 
 	public System.Random rand;
 
@@ -273,10 +274,9 @@ public class GameManager : MonoBehaviour {
 		// Mostrar cartas jugdas6y6
 		// Esperar hasta que las animciones terminen
 		// Borrar carta de la escena y la lista
-
-		//
-
-		estadoActual = estadosJuego.CONSTRUCCION;
+		calculaPosicion.construye(cartaIA.tipoCarta, true);
+		Debug.Log ("parada");
+		espera.parada();
 	}
 
 
