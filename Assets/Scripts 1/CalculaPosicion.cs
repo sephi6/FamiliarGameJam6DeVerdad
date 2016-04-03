@@ -7,8 +7,8 @@ public class CalculaPosicion : MonoBehaviour {
 	// Use this for initialization
 	public int size=0;
 	public GameObject[] posiciones = new GameObject[12];
-	public bool[] posicionesOcupadas= new bool[12];
-	public Dictionary<Card.TIPO,List<int>> diccionarioDeCosas=new Dictionary<Card.TIPO,List<int>>();
+	public Card.TIPO[] posicionesTipadas = new Card.TIPO[12];
+	private string[] ciudad = new string[12];
 
 	public Recurso ruina;
 	public Recurso cultivo;
@@ -23,18 +23,13 @@ public class CalculaPosicion : MonoBehaviour {
 	public GameObject particulaConstructiva;
 
 	void Start () {
+		for (int i = 0; i < ciudad.Length; i++) {
+			ciudad [i] = "vacio";
+		}
 
-
-		diccionarioDeCosas.Add(Card.TIPO.PIEDRA,new List<int>());
-		diccionarioDeCosas.Add(Card.TIPO.PAPEL, new List<int>());
-		diccionarioDeCosas.Add(Card.TIPO.TIJERA, new List<int>());
-		diccionarioDeCosas.Add(Card.TIPO.NULL, new List<int>());
-
-		List<Recurso> prueba = new List<Recurso>();
-		prueba.Add(cultivo);
-		prueba.Add(militar);
-		prueba.Add(construccion);
-		// prueba.Add(ruina);
+		for (int i = 0; i < posicionesTipadas.Length; i++) {
+			posicionesTipadas [i] = Card.TIPO.VACIO;
+		}
 		/*
        for (int i = 0; i < posiciones.Length;i++ )
        {
@@ -80,12 +75,17 @@ public class CalculaPosicion : MonoBehaviour {
 
 	public bool posicionLibre(int pos)
 	{
-
-		return posicionesOcupadas[pos];;
+		return (posicionesTipadas[pos] == Card.TIPO.NULL || posicionesTipadas[pos] == Card.TIPO.VACIO);
 	}
 
-	public void construye(Card.TIPO tipo, bool mareo) {
-		construye (consiguePosicionLibreRandom (), tipo, mareo);
+	public void destruye (Card.TIPO tipo) {
+		construye (consiguePosicionOcupada(tipo), Card.TIPO.NULL, false);
+	}
+
+	public int construye(Card.TIPO tipo, bool mareo) {
+		int pos = consiguePosicionLibreRandom ();
+		construye (pos, tipo, mareo);
+		return pos;
 	}
 
 	public void construye(int pos, Card.TIPO tipo, bool mareo) {
@@ -105,25 +105,35 @@ public class CalculaPosicion : MonoBehaviour {
 		}
 	}
 
-	public void construye(Recurso recurso) {
-		construye (consiguePosicionLibreRandom (), recurso);
+	public int construye(Recurso recurso) {
+		int pos = consiguePosicionLibreRandom ();
+		construye (pos, recurso);
+		return pos;
 	}
 
 	public void construye(int pos, Recurso recurso)
 	{
 		// INSTANCIAR SISTEMA DE PARTICULAS
-		posicionesOcupadas[pos] = (recurso.tipo == Card.TIPO.NULL) ? false : true;
-		Debug.Log ("posicion: " + pos + " recurso: " + recurso.tipo + " ocupado: " + posicionesOcupadas[pos]);
-		Instantiate(recurso, posiciones[pos].transform.position,Quaternion.identity);
-		diccionarioDeCosas[recurso.tipo].Add(pos);
+		posicionesTipadas[pos] = recurso.tipo;
+		Debug.Log ("SOLAR: " + ciudad[pos]);
+		GameObject destruyeme = GameObject.Find (ciudad [pos]);
+		if (destruyeme != null) {
+			Debug.Log ("Destruyendo a " + ciudad[pos]);
+			DestroyImmediate (destruyeme);
+		} else {
+			Debug.Log ("Nada que destruir en " + pos);
+		}
+
+		ciudad [pos] = Instantiate(recurso, posiciones[pos].transform.position,Quaternion.identity).ToString();
+		Debug.Log ("CONSTRUYENDO: " + ciudad[pos]);
 	}
 
 	public int consiguePosicionLibreOrdenado()
 	{
-		int res=0;
-		for (int i=0; i < posicionesOcupadas.Length; i++)
+		int res=-1;
+		for (int i=0; i < posicionesTipadas.Length; i++)
 		{
-			if (posicionesOcupadas[i] == false)
+			if (posicionesTipadas[i] == Card.TIPO.NULL || posicionesTipadas[i] == Card.TIPO.VACIO)
 			{
 				return i;
 			}
@@ -134,13 +144,13 @@ public class CalculaPosicion : MonoBehaviour {
 
 	public int consiguePosicionLibreRandom()
 	{
-		int res = 0;
+		int res = -1;
 		int random; 
 		bool bucle=true;
 		while (bucle)
 		{
-			random = Random.Range(0, posicionesOcupadas.Length);
-			if (!posicionesOcupadas[random])
+			random = Random.Range(0, posicionesTipadas.Length);
+			if (posicionesTipadas[random] == Card.TIPO.NULL || posicionesTipadas[random] == Card.TIPO.VACIO)
 			{
 				res=random;
 				bucle = false;
@@ -149,5 +159,18 @@ public class CalculaPosicion : MonoBehaviour {
 		return res;
 	}
 
-
+	public int consiguePosicionOcupada (Card.TIPO tipo) {
+		int resultado = -1;int random; 
+		bool bucle=true;
+		while (bucle)
+		{
+			random = Random.Range(0, posicionesTipadas.Length);
+			if (posicionesTipadas[random] == tipo)
+			{
+				resultado=random;
+				bucle = false;
+			}
+		}
+		return resultado;
+	}
 }

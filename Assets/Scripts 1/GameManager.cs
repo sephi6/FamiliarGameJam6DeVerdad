@@ -36,9 +36,11 @@ public class GameManager : MonoBehaviour {
 
 	private Card.TIPO congelado;
 
+	private int posConstruccionIA;
+
 	// Use this for initializa
 	void Start () {
-
+		posConstruccionIA = -1;
 		recursos[Card.TIPO.PIEDRA] = 1;
 		recursos[Card.TIPO.PAPEL] = 1;
 		recursos[Card.TIPO.TIJERA] = 1;
@@ -274,16 +276,18 @@ public class GameManager : MonoBehaviour {
 		// Mostrar cartas jugdas6y6
 		// Esperar hasta que las animciones terminen
 		// Borrar carta de la escena y la lista
-		calculaPosicion.construye(cartaIA.tipoCarta, true);
-		Debug.Log ("parada");
-		espera.parada();
+		posConstruccionIA = calculaPosicion.construye(cartaIA.tipoCarta, true);
+		espera.paradaMareo();
 	}
 
 
 	public void construye (Card.TIPO tipo) {
 		// RESGUARDO
 		// Animación de construcción
-		recursos[tipo] += 1;
+		if (tipo != Card.TIPO.NULL) {
+			recursos [tipo] += 1;
+		}
+		calculaPosicion.construye(posConstruccionIA, cartaIA.tipoCarta, false);
 		Debug.Log ("IA construye un " + tipo);
 	}
 
@@ -309,6 +313,7 @@ public class GameManager : MonoBehaviour {
 				// animación de counter?
 				playerContrarestado = true;
 				IAContrarestada = true;
+				construye (Card.TIPO.NULL);
 			}
 			break;
 
@@ -323,10 +328,11 @@ public class GameManager : MonoBehaviour {
 				// animación de counter?
 				playerContrarestado = false;
 				IAContrarestada = true;
+				construye (Card.TIPO.NULL);
 			}
 			break;
 		}
-		estadoActual = estadosJuego.DESTRUCCION;
+		espera.paradaConstruccion ();
 	}
 
 	public void apagaBotones () {
@@ -351,19 +357,20 @@ public class GameManager : MonoBehaviour {
 		if (!playerContrarestado) {
 			switch (cartaJugador.especialidadCarta) {
 			case Card.ESPECIALIDAD.LENTA:
-				recursos [cartaJugador.tipoCarta] -= 3;
+				bool sigue = true;
+				for (int i = 0; i < 3 && sigue; i++) {
+					sigue = destruye (cartaJugador.tipoCarta);
+				}
 				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
-				Debug.Log ("PIM, destruyes 3 " + cartaJugador.tipoCarta);
 				break;
 			case Card.ESPECIALIDAD.PRISA:
 				congelado = cartaJugador.tipoCarta;
 				roba (1);
-				Debug.Log ("Congelas " + cartaJugador.tipoCarta);
+				// ANIMACION DE CONGELACION
 				break;
 			case Card.ESPECIALIDAD.NORMAL:
-				recursos [cartaJugador.tipoCarta] -= 1;
+				destruye(cartaJugador.tipoCarta);
 				recursos [cartaJugador.tipoCarta] = (recursos [cartaJugador.tipoCarta] < 0) ? 0: recursos [cartaJugador.tipoCarta];
-				Debug.Log ("Destruyes 1 " + cartaJugador.tipoCarta);
 				break;
 			default:
 				Debug.Log ("EL JUGADOR HA ESCOGIDO UNA CARTA DE LA MAQUINA, MILAGRO!!");
@@ -371,6 +378,16 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 		estadoActual = estadosJuego.FIN_DE_TURNO;
+	}
+
+	public bool destruye (Card.TIPO tipo) {
+		bool resultado = false;
+		if (recursos [tipo] > 0) {
+			resultado = true;
+			calculaPosicion.destruye (tipo);
+			recursos [tipo] -= 1;
+		}
+		return resultado;
 	}
 
 	public int ganador()

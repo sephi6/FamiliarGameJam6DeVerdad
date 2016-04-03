@@ -8,15 +8,31 @@ public class Espera : MonoBehaviour {
 		
 	}
 
-	public void parada() {
-		StartCoroutine(Example());
+	public void paradaMareo() {
+		StartCoroutine(construccionMareo());
 	}
 
-	IEnumerator Example() {
-		Debug.Log(Time.time);
+	public void paradaConstruccion() {
+		StartCoroutine(construccion());
+	}
+
+	public void paradaDestruccion() {
+		StartCoroutine(destruccion());
+	}
+
+	IEnumerator construccionMareo() {
 		yield return new WaitForSeconds(1);
-		Debug.Log(Time.time);
 		gameManager.estadoActual = GameManager.estadosJuego.CONSTRUCCION;
+	}
+
+	IEnumerator construccion() {
+		yield return new WaitForSeconds(1);
+		gameManager.estadoActual = GameManager.estadosJuego.DESTRUCCION;
+	}
+
+	IEnumerator destruccion() {
+		yield return new WaitForSeconds(1);
+		gameManager.estadoActual = GameManager.estadosJuego.FIN_DE_TURNO;
 	}
 
 }
