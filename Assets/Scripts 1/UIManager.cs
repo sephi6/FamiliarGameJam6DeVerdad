@@ -10,12 +10,25 @@ public class UIManager : MonoBehaviour {
 
     public Animator botonPanel;
 
+    //public Button playAgain;
+    //public Button goMenu;
+
     
 
 	// Use this for initialization
 	void Start () {
 	    
 	}
+
+    public void PlayAgain()
+    {
+        Application.LoadLevel(1);
+    }
+
+    public void GoMenu()
+    {
+        Application.LoadLevel(0);
+    }
 
     public void cierraPestaña()
     {
