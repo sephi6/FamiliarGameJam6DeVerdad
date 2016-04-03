@@ -9,6 +9,9 @@ public class UIManagerMenu : MonoBehaviour {
 
     public Animator panelHow;
 
+    public Button playAgain;
+    public Button mainMenu;
+
 	// Use this for initialization
 	void Start () {
 	
