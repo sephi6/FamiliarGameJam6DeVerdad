@@ -16,9 +16,12 @@ public class GameManager : MonoBehaviour {
 	public List<GameObject> prefabs;
 	public GameObject panel;
 	public CalculaPosicion calculaPosicion;
-	public GameObject panelVictoria;
+	public Animator panelVictoria;
 	public Text textoVictoria;
 	public Espera espera;
+
+    public Animator textoMaquina;
+    public Text textMaquina;
 
 	public System.Random rand;
 
@@ -78,6 +81,7 @@ public class GameManager : MonoBehaviour {
 			break; // Calculamos si perdemos
 		case(estadosJuego.FIN):
 			Debug.Log ("Estado fin de juego");
+            panelVictoria.SetInteger("salida", 1);
 			estadoActual = estadosJuego.ESPERA;
 			if (jugarOtraPartida ())
 				estadoActual = estadosJuego.ESPERA;
@@ -100,6 +104,7 @@ public class GameManager : MonoBehaviour {
 			Debug.Log ("Estado construccion");
 			estadoActual = estadosJuego.ESPERA;
 			resuelveMareo ();
+            StartCoroutine(llamaTextoJugada());
 			break; // CONSTRUCCION Y COUNTER
 		}
 	}
@@ -155,9 +160,12 @@ public class GameManager : MonoBehaviour {
 		if (total < 3) {
 			Debug.Log ("GANASTE WEY");
 			ganaste = true;
+            textoVictoria.text = "The City has been destroyed.You've won.";
+
 			estadoActual = estadosJuego.FIN;
 		} else if (total > 11) {
 			Debug.Log ("PERDISTE LOOSER");
+            textoVictoria.text = "The City has survived. You lost.";
 			ganaste = false;
 			estadoActual = estadosJuego.FIN;
 		} else {
@@ -218,6 +226,9 @@ public class GameManager : MonoBehaviour {
 
 		cartaJugador = new Card (tipo, especialidad);
 		cartaIA = IAEligeCarta ();
+         
+
+        
 		congelado = Card.TIPO.NULL;
 		Debug.Log ("El jugador elige: " + cartaJugador.tipoCarta + " " + cartaJugador.especialidadCarta );
 		Debug.Log ("La IA elige: " + cartaIA.tipoCarta + " " + cartaIA.especialidadCarta );
@@ -227,6 +238,14 @@ public class GameManager : MonoBehaviour {
 	public void borraBoton (int pos) {
 		botones.RemoveAt (pos);
 	}
+
+    IEnumerator llamaTextoJugada()
+    {
+        
+        textoMaquina.SetInteger("salida", 1);
+        yield return new WaitForSeconds(0.5f);
+        textoMaquina.SetInteger("salida", 0);
+    }
 
 	public Card IAEligeCarta () {
 		int tipo;
@@ -238,12 +257,15 @@ public class GameManager : MonoBehaviour {
 		switch (tipo) {
 		case 1:
 			resultado = new Card (Card.TIPO.PIEDRA, Card.ESPECIALIDAD.MAQUINA);
+            textMaquina.text=("The city has chosen Construction");
 			break;
 		case 2:
 			resultado = new Card (Card.TIPO.PAPEL, Card.ESPECIALIDAD.MAQUINA);
+            textMaquina.text = ("The city has chosen Farm");
 			break;
 		default:
 			resultado = new Card (Card.TIPO.TIJERA, Card.ESPECIALIDAD.MAQUINA);
+            textMaquina.text = ("The city has chosen Quarters");
 			break;
 		}
 		return resultado;
@@ -296,6 +318,7 @@ public class GameManager : MonoBehaviour {
 		switch (ganador ()) {
 		case -1:
 			Debug.Log ("Te han contrarestado");
+            textMaquina.text += "\n You've been counteract";
 			// animación de counter?
 			playerContrarestado = true;
 			IAContrarestada = false;
@@ -310,6 +333,7 @@ public class GameManager : MonoBehaviour {
 				construye (cartaIA.tipoCarta);
 			} else {
 				Debug.Log ("Double counter");
+                textMaquina.text += "\n Draw";
 				// animación de counter?
 				playerContrarestado = true;
 				IAContrarestada = true;
@@ -325,6 +349,7 @@ public class GameManager : MonoBehaviour {
 				construye (cartaIA.tipoCarta);
 			} else {
 				Debug.Log ("Contrarestas a la IA");
+                textMaquina.text += "\n The City has been counteract";
 				// animación de counter?
 				playerContrarestado = false;
 				IAContrarestada = true;
