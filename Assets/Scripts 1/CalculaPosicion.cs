@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 public class CalculaPosicion : MonoBehaviour {
 
-	// Use this for initialization
+	// Use this for initializationne
 	public int size=0;
 	public GameObject[] posiciones = new GameObject[12];
 	public Card.TIPO[] posicionesTipadas = new Card.TIPO[12];
-	private string[] ciudad = new string[12];
+	public GameObject[] ciudad = new GameObject[12];
 
 	public Recurso ruina;
 	public Recurso cultivo;
@@ -24,7 +24,7 @@ public class CalculaPosicion : MonoBehaviour {
 
 	void Start () {
 		for (int i = 0; i < ciudad.Length; i++) {
-			ciudad [i] = "vacio";
+			ciudad [i] = null;
 		}
 
 		for (int i = 0; i < posicionesTipadas.Length; i++) {
@@ -115,17 +115,17 @@ public class CalculaPosicion : MonoBehaviour {
 	{
 		// INSTANCIAR SISTEMA DE PARTICULAS
 		posicionesTipadas[pos] = recurso.tipo;
-		Debug.Log ("SOLAR: " + ciudad[pos]);
-		GameObject destruyeme = GameObject.Find (ciudad [pos]);
-		if (destruyeme != null) {
-			Debug.Log ("Destruyendo a " + ciudad[pos]);
-			DestroyImmediate (destruyeme);
+		if (ciudad[pos] != null) {
+			Debug.Log ("SOLAR: " + ciudad[pos].ToString());
+			DestroyImmediate (ciudad[pos]);
 		} else {
 			Debug.Log ("Nada que destruir en " + pos);
 		}
-
-		ciudad [pos] = Instantiate(recurso, posiciones[pos].transform.position,Quaternion.identity).ToString();
-		Debug.Log ("CONSTRUYENDO: " + ciudad[pos]);
+		GameObject aux = Instantiate(recurso.gameObject, posiciones[pos].transform.position,Quaternion.identity) as GameObject;
+		if (aux == null)
+			Debug.Log ("T________________T");
+		else
+			ciudad [pos] = aux;
 	}
 
 	public int consiguePosicionLibreOrdenado()
@@ -157,7 +157,7 @@ public class CalculaPosicion : MonoBehaviour {
 				res=random;
 				bucle = false;
 			}
-            if (cont > 120)
+            if (cont > 12000)
             {
                 bucle = false;
             }

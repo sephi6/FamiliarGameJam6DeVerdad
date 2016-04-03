@@ -309,7 +309,7 @@ public class GameManager : MonoBehaviour {
 		if (tipo != Card.TIPO.NULL) {
 			recursos [tipo] += 1;
 		}
-		calculaPosicion.construye(posConstruccionIA, cartaIA.tipoCarta, false);
+		calculaPosicion.construye(posConstruccionIA, tipo, false);
 		Debug.Log ("IA construye un " + tipo);
 	}
 
@@ -349,7 +349,7 @@ public class GameManager : MonoBehaviour {
 				construye (cartaIA.tipoCarta);
 			} else {
 				Debug.Log ("Contrarestas a la IA");
-                textMaquina.text += "\n The City has been counteract";
+                textMaquina.text += "\n The City has been countered";
 				// animación de counter?
 				playerContrarestado = false;
 				IAContrarestada = true;
