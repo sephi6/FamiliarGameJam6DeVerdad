@@ -147,14 +147,20 @@ public class CalculaPosicion : MonoBehaviour {
 		int res = -1;
 		int random; 
 		bool bucle=true;
+        int cont = 0;
 		while (bucle)
 		{
+            cont++;
 			random = Random.Range(0, posicionesTipadas.Length);
 			if (posicionesTipadas[random] == Card.TIPO.NULL || posicionesTipadas[random] == Card.TIPO.VACIO)
 			{
 				res=random;
 				bucle = false;
 			}
+            if (cont > 120)
+            {
+                bucle = false;
+            }
 		}
 		return res;
 	}
